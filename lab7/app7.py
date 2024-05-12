@@ -1,0 +1,48 @@
+import re
+import logging
+
+file_path = "lab7\lab.config"
+logging.basicConfig(level=logging.INFO)
+class Configuration:
+    def recognize_header(self, log_line):
+        return re.match("[[a-zA-Z]*]",log_line) is not None
+
+    def recognize_value(self, log_line):
+        return re.match("[a-zA-Z]*=.+",log_line) is not None
+
+    def match_headers(self, log_line):
+        log_line = log_line[1:-1]
+        switcher = {
+            "Display": self.add_to_display,
+            "LogFile": self.set_log_file,
+            "Config": self.set_logging_config
+        }
+        return switcher.get(log_line, "Invalid header")
+    
+    def add_to_display(self, log_line):
+        self.display.append(log_line)
+
+    def set_log_file(self, log_line):
+        self.log_file = log_line
+
+    def set_logging_config(self, log_line):
+        logging.basicConfig(level=log_line)
+
+    def open_file(self, file_path):
+        with open(file_path, 'r') as file:
+            return file.readlines()    
+        
+    def run(self):
+        lines = self.open_file(file_path)
+        current_fun = None
+        for line in lines:
+            logging.info(f"Processing line: {line}, current function: {current_fun}")
+            if(self.recognize_header(line)):
+                current_fun = self.match_headers(line)
+            elif (self.recognize_value(line)):
+                current_fun(line)
+
+config = Configuration()
+config.run()
+    
+    

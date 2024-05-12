@@ -2,7 +2,6 @@ from datetime import datetime
 import logging
 
 
-
 class Log:
     def __init__(self, ip, time, address, code, bytes_send, transfer_time):
         self.ip = ip
@@ -16,14 +15,14 @@ class Log:
         return f"{self.ip} {self.time} {self.address} {self.code} {self.bytes_send} {self.transfer_time}"
     
     def __repr__(self):
-        return self.__str__()
+        return f"Log({self.ip}, {self.time}, {self.address}, {self.code}, {self.bytes_send}, {self.transfer_time})"
 
 def string_to_datetime(string):
     date = string.split('/')
     day = int(date[0])
     month = get_month_from_name(date[1])
     time = date[2].split(':')
-    year= int(time[0])
+    year = int(time[0])
     hour = int(time[1])
     minute = int(time[2])
     second = int(time[3])
@@ -64,6 +63,7 @@ def read_file(file_path):
             logs.append(read_line(line))
     return logs
 
+
 def print_logs_between_dates(logs, start_date: datetime, end_date : datetime):
     if(start_date > end_date):
         logging.error("Start date is after end date")
@@ -73,9 +73,12 @@ def print_logs_between_dates(logs, start_date: datetime, end_date : datetime):
                 print(log)
 
 
-logs = read_file("lab4\log.txt")
-print_logs_between_dates(logs, datetime(2020, 10, 18, 4, 0, 0), datetime(2020, 10, 18, 4, 55, 1))
-print_logs_between_dates(logs, datetime(2020, 10, 18, 4, 55, 1), datetime(2020, 10, 18, 4, 0, 0))
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
+    logs = read_file("lab4\log.txt")
+    print_logs_between_dates(logs, datetime(2020, 10, 18, 4, 0, 0), datetime(2020, 10, 18, 4, 55, 1))
+    print_logs_between_dates(logs, datetime(2020, 10, 18, 4, 55, 1), datetime(2020, 10, 18, 4, 0, 0))
 
 #https://docs.python.org/3/library/ipaddress.html
+
 #https://docs.python.org/3/library/datetime.html
