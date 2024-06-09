@@ -1,8 +1,8 @@
 import requests
 import sqlite3
 
-uri_currencies = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json'
-uri_current = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/{}.json'
+uri_currencies = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
+
 class DatabaseIntegration:
     def __init__(self, db_name):
         self.db_name = db_name
@@ -16,10 +16,13 @@ class DatabaseIntegration:
         self.cursor.execute(f"CREATE TABLE {table_name} {columns}")
         self.conn.commit()
 
-    def add_currencies(self, data: dict):
+    def add_currencies(self, data):
         for key in data:
-            self.cursor.execute("INSERT INTO currencies VALUES (?, ?)", (key, data[key]))
+            self.cursor.execute("INSERT INTO coingecko VALUES (?, ?)", (key, data[key]))
         self.conn.commit()
+
+    def get_part_of_data(self,data):
+
 
     def get_all_currencies(self):
         self.cursor.execute("SELECT * FROM currencies")
@@ -39,16 +42,17 @@ class Download:
         return self.data
     
 def main():
-    #download = Download(uri_currencies)
-    #data = download.get_data()
-    #print(uri_current.format('usd'))
+    download = Download(uri_currencies)
+    data = download.get_data()
+    print(data)
+    print(data[0]['id'])
     db = DatabaseIntegration('lab13/currency.db')
-    print(db.get_all_currencies())
 
     
 
 def create_table(db: DatabaseIntegration):
-    db.create_table('currencies', '(id TEXT PRIMARY KEY, name TEXT)')
+    #db.create_table('currencies', '(id TEXT PRIMARY KEY, name TEXT)')
+    db.create_table('coingecko', '(id TEXT PRIMARY KEY, symbol TEXT, image TEXT, current_price FLOAT, market_cap FLOAT, market_cap_rank INT, price_change_24h FLOAT, price_change_percentage_24h FLOAT)')
     
 if __name__ == "__main__":
     main()
